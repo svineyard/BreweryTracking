@@ -15,7 +15,7 @@ script, readFile, writeFile = argv
 
 # Open brewery list file in read mode
 breweries = open(readFile, 'r').read()
-output = open(writeFile, 'r+')
+output = open(writeFile, 'w')
 
 # Create a list of lines from brewery list file
 brewList = breweries.splitlines()
@@ -40,9 +40,9 @@ for i in range(0,len(brewList)):
     brewList[i][1] = unicodetoascii(brewList[i][1])
     brewList[i][1] = brewList[i][1].replace('"','')
 
-    # write to output file parsed brewery list
-    #output.write(str(brewList[i]))
-    #output.write('\n')
+    # write to parseOutput.txt file with parsed brewery items if desired
+    # output.write(str(brewList[i]))
+    # output.write('\n')
 
 # Create instance of Workbook and new worksheet 
     wb = Workbook()
@@ -68,12 +68,9 @@ for row in brewList:
 for i, column_width in enumerate(column_widths):
     ws.column_dimensions[get_column_letter(i+1)].width = column_width
 
-
-# print(ws.value)
+# save excel doc
 wb.save('Brewery List.xlsx')
         
-
-
 output.close()
 
 
