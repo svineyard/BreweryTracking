@@ -20,9 +20,6 @@ output = open(writeFile, 'r+')
 # Create a list of lines from brewery list file
 brewList = breweries.splitlines()
 
-#initialize list var for parsing
-brewListsplit = []
-
 # parse through brewery list file and do:
 #   1) Remove initial spacing
 #   2) Split brewery name and location 
