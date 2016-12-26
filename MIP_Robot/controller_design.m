@@ -1,6 +1,6 @@
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 %                                                                         %
-% Controller_design.m 							                          %
+% Controller_design.m 							  %
 %                                                                         %
 % The plant and digital controller for the MIP robot's body angle and     %
 % wheel position are designed and tested in MATLAB.                       %
