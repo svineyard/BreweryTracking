@@ -1,11 +1,15 @@
 #include <SimpleModbusSlave.h>
+#include <SoftwareSerial.h>
 
 #define  alarmPin  13 // alarm digital input  
-const int tempPin  A0 // temperature sensor input 
+const int tempPin = A0; // temperature sensor input 
+
 int analogTemp;// analog temperature value 
 float voltageTemp; // analog temperature value scaled to voltage
 float tempF; // temperature in fahrenheit 
 int tempState; // current temperature in Celsius
+
+SoftwareSerial modbusSerial(2,3);
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
   
@@ -28,7 +32,7 @@ int tempState; // current temperature in Celsius
 // of your slaves register array each time you want to add more registers
 // and at a glimpse informs you of your slaves register layout.
 
-// registes of Modbus slave
+// registers of Modbus slave
 enum 
 {     
   // just add or remove registers and your good to go
@@ -57,9 +61,9 @@ void setup()
      implementations.
   */
   
-  // RS-485 shield will use D7 as the transmit enable pin, slave address will 
+  // RS-485 shield will use D2 as the transmit enable pin, slave ID will 
   // start at 1 
-  modbus_configure(115200, 1, 7, TOTAL_REGS_SIZE, 0);
+  modbus_configure(115200, 1, 1, TOTAL_REGS_SIZE, 0);
   pinMode(alarmPin, INPUT);
   pinMode(tempPin, INPUT);
 }
@@ -70,7 +74,6 @@ void loop()
   // error count since the slave started. Optional, but it's useful
   // for fault finding by the modbus master.
   holdingRegs[TOTAL_ERRORS] = modbus_update(holdingRegs);
-  for (byte i = 0; i < 6; i++)
   
   /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
   
@@ -96,7 +99,7 @@ void loop()
   /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
   // read analog temperature value 
-  analogTemp = analogRead(sensor);
+  analogTemp = analogRead(tempPin);
   
   //convert ADC reading to voltage 
   voltageTemp = (analogTemp/1024.0)*5.0;
@@ -104,26 +107,10 @@ void loop()
   //convert voltage value to temperature(F)
   //TMP36 is 25C at 750 mV, +/- 10mV for every 1C
   //-0.5 offscale results from conversion of V to C for TMP 36
-  tempF = ((9.0/5.0)*(voltageOutput - 0.5)*100;) + 32.0;
-  tempState = (int) temp;
+  tempF = ((9.0/5.0)*(voltageTemp - 0.5)*100) + 32.0;
+  tempState = (int) tempF;
 
   // assign temperature value to holding register
   holdingRegs[TEMP_STATE] = tempState;
 
-  /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
-  
-    ?????
-
-    What else is required for Modbus slave to respond with holding register data?
-
-  /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-  
-  if (ledState) // set led		  
-    digitalWrite(ledPin, HIGH);
-  if (ledState == 0 || buttonState) // reset led
-  {
-    digitalWrite(ledPin, LOW);
-    holdingRegs[LED_STATE] = 0;
-  }
 }
-
